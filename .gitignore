@@ -1,0 +1,7 @@
+# Binaries
+a.out
+
+# Generated code and files
+output.txt
+lex.yy.c
+y.tab.c
