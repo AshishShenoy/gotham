@@ -10,11 +10,12 @@
 
 
 %union {
-	char *T_ID;
+	char T_ID[32];
 	char T_OP;
+	short L_BOOL;
 	long L_INT;
 	double L_FP;
-	char *L_STR;
+	char L_STR[1024];
 };
 
 
@@ -23,9 +24,15 @@
 
 %token							T_IDENTIFIER
 
+%token							L_BOOLEAN
 %token							L_INTEGER
 %token							L_FLOAT
 %token							L_STRING
+
+%token							TY_BOOL
+%token							TY_INT
+%token							TY_FP
+%token							TY_STR
 
 %token							KW_PACKAGE
 %token							KW_IMPORT
