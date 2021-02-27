@@ -46,6 +46,7 @@
 %token				KW_IF
 %token				KW_ELSE
 %token				KW_FOR
+%token              KW_PRINT
 
 %token				OP_AND 
 %token				OP_OR 
@@ -53,13 +54,14 @@
 %token				OP_NEQ 
 %token				OP_GEQ 
 %token				OP_LEQ 
+%token              OP_L
+%token              OP_G
 %token				OP_ARRAY_DECL 
 
 
 %%
 
-Program:
-                    PackageDecl ImportDeclList;
+Program:    Program stat | ;
 
         
 PackageDecl:
@@ -82,7 +84,49 @@ ImportDecl:
 ModuleName:
                     L_STRING;
 
+stat: PackageDecl ImportDeclList
+      | declaration stat
+      | expression stat
+      | relation stat
+      | printstat stat
+      | assignstat
+      | {};
 
+declaration: KW_VAR T_IDENTIFIER type '=' expression|
+             KW_VAR T_IDENTIFIER type;
+
+type:   TY_INT|
+        TY_FP|
+        TY_STR|
+        TY_BOOL;
+
+const: L_FLOAT
+       | L_BOOLEAN
+       | L_INTEGER
+       | L_STRING;
+
+
+expression: '(' expression ')' 
+            | expression '+' expression
+            | expression '-' expression
+            | expression '*' expression
+            | expression '/' expression
+            | expression '%' expression
+            | const
+            | T_IDENTIFIER;
+
+relation: expression OP_L expression
+          | expression OP_G expression
+          | expression OP_LEQ expression
+          | expression OP_GEQ expression
+          | expression OP_EQ expression
+          | expression OP_NEQ expression;
+
+printstat: KW_PRINT '(' L_STRING ')'
+           | KW_PRINT '(' expression ')';
+
+
+assignstat: T_IDENTIFIER '=' expression;
 
 %%
 
