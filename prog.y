@@ -89,7 +89,11 @@ stat: PackageDecl ImportDeclList
       | expression stat
       | relation stat
       | printstat stat
-      | assignstat
+      | assignstat stat
+      | funcstat stat
+      | returnStmt stat
+      | ifstat stat
+      | forStmt stat
       | {};
 
 declaration: KW_VAR T_IDENTIFIER type '=' expression|
@@ -114,7 +118,7 @@ expression: '(' expression ')'
             | expression '%' expression
             | const
             | T_IDENTIFIER;
-
+/* extend support for or and and */
 relation: expression OP_L expression
           | expression OP_G expression
           | expression OP_LEQ expression
@@ -127,6 +131,27 @@ printstat: KW_PRINT '(' L_STRING ')'
 
 
 assignstat: T_IDENTIFIER '=' expression;
+
+block: '{' stat '}' | {};
+
+funcstat: KW_FUNC T_IDENTIFIER '(' params ')' type block;
+
+params: paramList | {};
+
+paramList: paramList ',' param | param ;
+
+param: paramId type;
+
+paramId: paramId ',' T_IDENTIFIER | T_IDENTIFIER;
+
+returnStmt: KW_RETURN expression | KW_RETURN;
+
+ifstat: KW_IF '(' relation ')' block OptionalElse;
+
+OptionalElse: KW_ELSE block | KW_ELSE ifstat | {};
+
+forStmt: KW_FOR stat ';' relation ';' stat block;
+
 
 %%
 

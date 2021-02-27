@@ -14,4 +14,4 @@ clean:
 	rm -f a.out lex.yy.c y.tab.c y.tab.h
 
 run: a.out test
-	@./a.out < test
+	@./a.out < test.go

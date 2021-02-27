@@ -8,7 +8,7 @@
 %}
 
 %option yylineno
-
+/*No support yet for ++, -- += etc */
 /* Characters */
 alpha                           [a-zA-Z_]
 digit                           [0-9]
