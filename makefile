@@ -13,5 +13,5 @@ y.tab.c: prog.y
 clean:
 	rm -f a.out lex.yy.c y.tab.c y.tab.h
 
-run: a.out
-	@./a.out < test.go
+run: a.out test
+	@./a.out < test
