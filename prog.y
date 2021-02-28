@@ -10,6 +10,70 @@
     extern int yylineno;
     extern char* yytext;
     extern int yychar;
+
+    struct ST{
+        char id[32];
+        char type[10];
+        char value[20];
+        //int index;
+    };
+    typedef struct ST symTB;
+
+    #define MAX_SYMBOL_NUM 100
+    #define STACK_SIZE 10
+    symTB ST[MAX_SYMBOL_NUM][STACK_SIZE];
+    int stackPtr = 0;
+
+
+    int symTBIndex[STACK_SIZE];
+    
+
+    void insert_symbol(char* id, char* type, char* value){
+        if(stackPtr == -1){
+            return;
+        }
+        int indx = symTBIndex[stackPtr];
+        strcpy(ST[indx][stackPtr].id, id);
+        strcpy(ST[indx][stackPtr].type, type);
+        strcpy(ST[indx][stackPtr].value, value);
+        symTBIndex[stackPtr] = indx + 1;
+        return;
+    }
+
+    
+    void disp_symtbl(){
+        if(stackPtr == -1){
+            return;
+        }
+        int indx = symTBIndex[stackPtr];
+        printf("%s\t%s\t\t%s\n","Name", "Type", "Value");
+        for(int i = 0; i < indx; i++){
+            printf("%s\t%s\t\t%s",ST[i][stackPtr].id, ST[i][stackPtr].type, ST[i][stackPtr].value);
+        }
+        printf("\n\n");
+        return;
+    }
+
+    void push_block(){
+        stackPtr++;
+        if(stackPtr == STACK_SIZE){
+            stackPtr = STACK_SIZE - 1;
+            printf("STACK FULL");
+        }
+        return;
+    }
+
+    // pop stack and display sym tbl
+    void pop_block(){
+        if(stackPtr != -1){
+            disp_symtbl();
+            stackPtr--;
+            return;
+        }
+        printf("STACK EMPTY");
+    }
+
+
 %}
 
 
