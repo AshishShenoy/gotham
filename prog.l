@@ -12,7 +12,6 @@
 /* Characters */
 alpha                           [a-zA-Z_]
 digit                           [0-9]
-statement_terminator            {newline}|{semicolon}
 newline                         \n
 semicolon                       ;
 whitespace                      [ \t]
@@ -81,7 +80,8 @@ string_invalid_double           \"[^"]*
                                     exit(EXIT_FAILURE);
                                 }
 
-{statement_terminator}          return T_STMT_TERMINATOR;
+{newline}                       return T_NEWLINE;
+{semicolon}                     return T_SEMICOLON;
                                 
 
 {operator_char}                 return yytext[0];

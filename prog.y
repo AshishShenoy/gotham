@@ -26,7 +26,8 @@
 %start				Program
 
 
-%token                          T_STMT_TERMINATOR
+%token                          T_NEWLINE
+%token                          T_SEMICOLON
 
 %token				T_IDENTIFIER
 
@@ -58,9 +59,6 @@
 %token				OP_LEQ 
 %token				OP_ARRAY_DECL 
 
-%left                           '+' '-' 
-%left                           T_STMT_TERMINATOR
-
 
 %%
 
@@ -73,8 +71,13 @@ PackageDecl:
 
 
 StatementTermList:
-        StatementTermList T_STMT_TERMINATOR
-    |   T_STMT_TERMINATOR;
+        StatementTermList StatementTerminator
+    |   StatementTerminator;
+
+
+StatementTerminator:
+        T_SEMICOLON
+    |   T_NEWLINE;
 
 
 ImportDeclList:
@@ -94,14 +97,11 @@ GlobalStmtList:
 Statement:
         VarDecl
     |   Expression
-    |   RelExpression
     |   PrintStmt
-    |   AssignmentStmt
     |   FunctionDecl
     |   ReturnStmt
     |   IfStmt
-    |   ForStmt
-    |   FunctionCallStmt;
+    |   ForStmt;
 
 
 VarDecl:
@@ -116,6 +116,76 @@ Type:
     |   TY_BOOL;
 
 
+Expression:
+        '(' Expression ')'
+    |   AssignmentExpression
+    |   SimpleExpression;
+
+
+AssignmentExpression:
+        T_IDENTIFIER '=' Expression;
+
+
+SimpleExpression:
+        SimpleExpression OP_OR AndExpression
+    |   AndExpression;
+
+
+AndExpression:
+        AndExpression OP_AND UnaryRelExpression
+    |   UnaryRelExpression;
+
+
+UnaryRelExpression:
+        '!' UnaryRelExpression
+    |   RelExpression;
+
+
+RelExpression:
+        SumExpression OP_EQ SumExpression
+    |   SumExpression OP_NEQ SumExpression
+    |   SumExpression '<' SumExpression
+    |   SumExpression OP_LEQ SumExpression
+    |   SumExpression '>' SumExpression
+    |   SumExpression OP_GEQ SumExpression
+    |   SumExpression;
+
+
+SumExpression:
+        SumExpression '+' MulExpression
+    |   SumExpression '-' MulExpression
+    |   MulExpression;
+
+
+MulExpression:
+        MulExpression '*' UnaryExpression
+    |   MulExpression '/' UnaryExpression
+    |   MulExpression '%' UnaryExpression
+    |   UnaryExpression;
+
+
+UnaryExpression:
+        '+' UnaryExpression
+    |   '-' UnaryExpression
+    |   Factor;
+
+
+Factor:
+        T_IDENTIFIER
+    |   FunctionCallStmt
+    |   Literal
+
+
+FunctionCallStmt:
+        T_IDENTIFIER '(' ArgumentList ')';
+
+
+ArgumentList:
+        ArgumentList ',' Expression
+    |   Expression
+    |   %empty;
+
+
 Literal:
         L_FLOAT
     |   L_BOOLEAN
@@ -123,71 +193,43 @@ Literal:
     |   L_STRING;
 
 
-/*
-Expression:
-        '(' Expression ')' 
-    |   Expression '+' Expression
-    |   Expression '-' Expression
-    |   Expression '*' Expression
-    |   Expression '/' Expression
-    |   Expression '%' Expression
-    |   RelExpression
-    |   Literal
-    |   T_IDENTIFIER;
+FunctionDecl:
+        KW_FUNC T_IDENTIFIER '(' ParameterList ')' Type OptionalNewlines BlockStmt;
 
 
-RelExpression:
-        Expression '<' Expression
-    |   Expression '>' Expression
-    |   Expression OP_LEQ Expression
-    |   Expression OP_GEQ Expression
-    |   Expression OP_EQ Expression
-    |   Expression OP_NEQ Expression
-    |   RelExpression OP_OR RelExpression
-    |   RelExpression OP_AND RelExpression
-    |   '!' Expression;
-*/
+OptionalNewlines:
+        OptionalNewlines T_NEWLINE
+    |   %empty;
+
+
+ParameterList:
+        ParameterList ',' Parameter
+    |   Parameter
+    |   %empty;
+
+
+Parameter:
+        T_IDENTIFIER Type;
+
 
 PrintStmt:
         KW_PRINT '(' L_STRING ')'
     |   KW_PRINT '(' Expression ')';
 
 
-AssignmentStmt:
-        T_IDENTIFIER '=' Expression;
-
-
 BlockStmt:
-        '{' BlockStmtList '}'
+        '{' OptionalStmtTermList BlockStmtList OptionalStmtTermList '}'
     |   '{' '}';
+
+
+OptionalStmtTermList:
+        OptionalStmtTermList StatementTerminator
+    |   %empty;
 
 
 BlockStmtList:
         BlockStmtList Statement StatementTermList
     |   %empty;
-
-
-FunctionDecl:
-        KW_FUNC T_IDENTIFIER '(' Parameters ')' Type BlockStmt;
-
-
-Parameters:
-        ParameterList
-    |   Parameter;
-
-
-ParameterList:
-        ParameterList ',' Parameter
-    |   %empty;
-
-
-Parameter:
-        ParamIdList Type;
-
-
-ParamIdList:
-        ParamIdList ',' T_IDENTIFIER
-    |   T_IDENTIFIER;
 
 
 ReturnStmt:
@@ -196,35 +238,18 @@ ReturnStmt:
 
 
 IfStmt:
-        KW_IF '(' RelExpression ')' BlockStmt OptionalElse;
+        KW_IF '(' Expression ')' OptionalNewlines BlockStmt OptionalElse;
 
 
 OptionalElse:
-        KW_ELSE BlockStmt
+        KW_ELSE OptionalNewlines BlockStmt
     |   KW_ELSE IfStmt
     |   %empty;
 
 
 ForStmt:
-        KW_FOR VarDecl ';' RelExpression ';' Statement BlockStmt;
+        KW_FOR VarDecl T_SEMICOLON Expression T_SEMICOLON Expression OptionalNewlines BlockStmt;
 
-
-FunctionCallStmt:
-        T_IDENTIFIER '(' Arguments ')';
-
-
-Arguments:
-        ArgumentList
-    |   Argument;
-
-
-ArgumentList:
-        ArgumentList ',' Expression
-    |   %empty;
-
-
-Argument:
-        Expression;
 
 %%
 

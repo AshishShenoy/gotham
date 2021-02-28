@@ -41,8 +41,11 @@ func main(abc int) int {
     fmt.Print("Hello, World!\n")
     fmt.Println(cc)
 
-    for var int3 int = 0; int3 < 4; int3 + 1 { 
-        print(int3)
+    for var int3 int = 0; int3 < 4; int3 + 1
+    {
+        ;
+        fmt.Println(int3)
+        ;
     } 
     
     return 0
