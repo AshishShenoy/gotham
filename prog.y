@@ -46,7 +46,7 @@
 %token				KW_IF
 %token				KW_ELSE
 %token				KW_FOR
-%token              KW_PRINT
+%token                          KW_PRINT
 
 %token				OP_AND 
 %token				OP_OR 
@@ -54,112 +54,174 @@
 %token				OP_NEQ 
 %token				OP_GEQ 
 %token				OP_LEQ 
-%token              OP_L
-%token              OP_G
 %token				OP_ARRAY_DECL 
 
 
 %%
 
-Program:    Program stat | ;
-
+Program:
+        PackageDecl ImportDeclList GlobalStmtList;
         
+
 PackageDecl:
-                    KW_PACKAGE EntryPoint;
+        KW_PACKAGE EntryPoint;
 
 
 EntryPoint:
-                    T_IDENTIFIER;
-                    
+        T_IDENTIFIER;
+
 
 ImportDeclList:
-                    ImportDecl ImportDeclList
-                |	ImportDecl;
+        ImportDeclList ImportDecl
+    |	%empty;
 
 
 ImportDecl:
-                    KW_IMPORT ModuleName;
+        KW_IMPORT ModuleName;
 
 
 ModuleName:
-                    L_STRING;
-
-stat: PackageDecl ImportDeclList
-      | declaration stat
-      | expression stat
-      | relation stat
-      | printstat stat
-      | assignstat stat
-      | funcstat stat
-      | returnStmt stat
-      | ifstat stat
-      | forStmt stat
-      | funcCallStat stat
-      | {};
-
-declaration: KW_VAR T_IDENTIFIER type '=' expression|
-             KW_VAR T_IDENTIFIER type;
-
-type:   TY_INT|
-        TY_FP|
-        TY_STR|
-        TY_BOOL;
-
-const: L_FLOAT
-       | L_BOOLEAN
-       | L_INTEGER
-       | L_STRING;
+        L_STRING;
 
 
-expression: '(' expression ')' 
-            | expression '+' expression
-            | expression '-' expression
-            | expression '*' expression
-            | expression '/' expression
-            | expression '%' expression
-            | const
-            | T_IDENTIFIER;
-/* extend support for or and and */
-relation: expression OP_L expression
-          | expression OP_G expression
-          | expression OP_LEQ expression
-          | expression OP_GEQ expression
-          | expression OP_EQ expression
-          | expression OP_NEQ expression
-          | relation OP_OR relation
-          | relation OP_AND relation;
-
-printstat: KW_PRINT '(' L_STRING ')'
-           | KW_PRINT '(' expression ')';
+GlobalStmtList:
+        GlobalStmtList  Statement
+    |   %empty;
 
 
-assignstat: T_IDENTIFIER '=' expression;
+Statement:
+        VarDecl
+    |   Expression
+    |   RelExpression
+    |   PrintStmt
+    |   AssignmentStmt
+    |   FunctionDecl
+    |   ReturnStmt
+    |   IfStmt
+    |   ForStmt
+    |   FunctionCallStmt;
 
-block: '{' stat '}' | {};
 
-funcstat: KW_FUNC T_IDENTIFIER '(' params ')' type block;
+VarDecl:
+        KW_VAR T_IDENTIFIER Type '=' Expression
+    |   KW_VAR T_IDENTIFIER Type;
 
-params: paramList | {};
 
-paramList: paramList ',' param | param ;
+Type:
+        TY_INT
+    |   TY_FP
+    |   TY_STR
+    |   TY_BOOL;
 
-param: paramId type;
 
-paramId: paramId ',' T_IDENTIFIER | T_IDENTIFIER;
+Literal:
+        L_FLOAT
+    |   L_BOOLEAN
+    |   L_INTEGER
+    |   L_STRING;
 
-returnStmt: KW_RETURN expression | KW_RETURN;
 
-ifstat: KW_IF '(' relation ')' block OptionalElse;
+Expression:
+        '(' Expression ')' 
+    |   Expression '+' Expression
+    |   Expression '-' Expression
+    |   Expression '*' Expression
+    |   Expression '/' Expression
+    |   Expression '%' Expression
+    |   RelExpression
+    |   Literal
+    |   T_IDENTIFIER;
 
-OptionalElse: KW_ELSE block | KW_ELSE ifstat | {};
 
-forStmt: KW_FOR stat ';' relation ';' stat block;
+RelExpression:
+        Expression '<' Expression
+    |   Expression '>' Expression
+    |   Expression OP_LEQ Expression
+    |   Expression OP_GEQ Expression
+    |   Expression OP_EQ Expression
+    |   Expression OP_NEQ Expression
+    |   RelExpression OP_OR RelExpression
+    |   RelExpression OP_AND RelExpression
+    |   '!' Expression;
 
-funcCallStat: T_IDENTIFIER '(' args ')';
 
-args: argList | {};
+PrintStmt:
+        KW_PRINT '(' L_STRING ')'
+    |   KW_PRINT '(' Expression ')';
 
-argList: argList ',' expression | expression;
+
+AssignmentStmt:
+        T_IDENTIFIER '=' Expression;
+
+
+BlockStmt:
+        '{' BlockStmtList '}'
+    |   '{' '}';
+
+
+BlockStmtList:
+        BlockStmtList Statement
+    |   Statement;
+
+
+FunctionDecl:
+        KW_FUNC T_IDENTIFIER '(' Parameters ')' Type BlockStmt;
+
+
+Parameters:
+        ParameterList
+    |   Parameter;
+
+
+ParameterList:
+        ParameterList ',' Parameter
+    |   %empty;
+
+
+Parameter:
+        ParamIdList Type;
+
+
+ParamIdList:
+        ParamIdList ',' T_IDENTIFIER
+    |   T_IDENTIFIER;
+
+
+ReturnStmt:
+        KW_RETURN Expression
+    |   KW_RETURN;
+
+
+IfStmt:
+        KW_IF '(' RelExpression ')' BlockStmt OptionalElse;
+
+
+OptionalElse:
+        KW_ELSE BlockStmt
+    |   KW_ELSE IfStmt
+    |   %empty;
+
+
+ForStmt:
+        KW_FOR VarDecl ';' RelExpression ';' Statement BlockStmt;
+
+
+FunctionCallStmt:
+        T_IDENTIFIER '(' Arguments ')';
+
+
+Arguments:
+        ArgumentList
+    |   Argument;
+
+
+ArgumentList:
+        ArgumentList ',' Expression
+    |   %empty;
+
+
+Argument:
+        Expression;
 
 %%
 

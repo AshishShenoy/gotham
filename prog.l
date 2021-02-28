@@ -31,8 +31,7 @@ keyword_return                  return
 keyword_if                      if
 keyword_else                    else
 keyword_for                     for
-keyword_print                   Print
-keyword_println                 Println
+keyword_print                   "fmt.Print"|"fmt.Println"
 
 /* Operators */
 operator_logical_and            "&&"
@@ -41,11 +40,9 @@ operator_equality               "=="
 operator_neg_equality           "!="
 operator_leq                    "<="
 operator_geq                    ">="
-operator_l                      "<"
-operator_g                      ">"
 operator_array_decl             "[]"
 operator_char                   {operator_numeric}|{operator_bracket}|{operator_other}
-operator_numeric                "+"|"-"|"*"|"/"|"%"|"!"
+operator_numeric                "+"|"-"|"*"|"/"|"%"|"!"|"<"|">"
 operator_bracket                "["|"]"|"{"|"}"|"("|")"
 operator_other                  ";"|"."|","|"="
 
@@ -89,8 +86,6 @@ string_invalid_double           \"[^"]*
 {operator_neg_equality}         return OP_NEQ;
 {operator_leq}                  return OP_LEQ;
 {operator_geq}                  return OP_GEQ;
-{operator_l}                    return OP_L;
-{operator_g}                    return OP_G;
 {operator_array_decl}           return OP_ARRAY_DECL;
 
 {keyword_package}               return KW_PACKAGE;
@@ -102,7 +97,6 @@ string_invalid_double           \"[^"]*
 {keyword_else}                  return KW_ELSE;
 {keyword_for}                   return KW_FOR;
 {keyword_print}                 return KW_PRINT;
-{keyword_println}               return KW_PRINT;
 
 {type_int}                      return TY_INT;
 {type_bool}                     return TY_BOOL;
