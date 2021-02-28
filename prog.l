@@ -31,8 +31,8 @@ keyword_return                  return
 keyword_if                      if
 keyword_else                    else
 keyword_for                     for
-keyword_print                   print
-keyword_println                 println
+keyword_print                   Print
+keyword_println                 Println
 
 /* Operators */
 operator_logical_and            "&&"

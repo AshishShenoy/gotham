@@ -94,6 +94,7 @@ stat: PackageDecl ImportDeclList
       | returnStmt stat
       | ifstat stat
       | forStmt stat
+      | funcCallStat stat
       | {};
 
 declaration: KW_VAR T_IDENTIFIER type '=' expression|
@@ -124,7 +125,9 @@ relation: expression OP_L expression
           | expression OP_LEQ expression
           | expression OP_GEQ expression
           | expression OP_EQ expression
-          | expression OP_NEQ expression;
+          | expression OP_NEQ expression
+          | relation OP_OR relation
+          | relation OP_AND relation;
 
 printstat: KW_PRINT '(' L_STRING ')'
            | KW_PRINT '(' expression ')';
@@ -152,6 +155,11 @@ OptionalElse: KW_ELSE block | KW_ELSE ifstat | {};
 
 forStmt: KW_FOR stat ';' relation ';' stat block;
 
+funcCallStat: T_IDENTIFIER '(' args ')';
+
+args: argList | {};
+
+argList: argList ',' expression | expression;
 
 %%
 
