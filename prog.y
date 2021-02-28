@@ -26,6 +26,8 @@
 %start				Program
 
 
+%token                          T_STMT_TERMINATOR
+
 %token				T_IDENTIFIER
 
 %token				L_BOOLEAN
@@ -56,6 +58,9 @@
 %token				OP_LEQ 
 %token				OP_ARRAY_DECL 
 
+%left                           '+' '-' 
+%left                           T_STMT_TERMINATOR
+
 
 %%
 
@@ -64,11 +69,12 @@ Program:
         
 
 PackageDecl:
-        KW_PACKAGE EntryPoint;
+        KW_PACKAGE T_IDENTIFIER StatementTermList;
 
 
-EntryPoint:
-        T_IDENTIFIER;
+StatementTermList:
+        StatementTermList T_STMT_TERMINATOR
+    |   T_STMT_TERMINATOR;
 
 
 ImportDeclList:
@@ -77,15 +83,11 @@ ImportDeclList:
 
 
 ImportDecl:
-        KW_IMPORT ModuleName;
-
-
-ModuleName:
-        L_STRING;
+        KW_IMPORT L_STRING StatementTermList;
 
 
 GlobalStmtList:
-        GlobalStmtList  Statement
+        GlobalStmtList Statement StatementTermList
     |   %empty;
 
 
@@ -121,6 +123,7 @@ Literal:
     |   L_STRING;
 
 
+/*
 Expression:
         '(' Expression ')' 
     |   Expression '+' Expression
@@ -143,7 +146,7 @@ RelExpression:
     |   RelExpression OP_OR RelExpression
     |   RelExpression OP_AND RelExpression
     |   '!' Expression;
-
+*/
 
 PrintStmt:
         KW_PRINT '(' L_STRING ')'
@@ -160,8 +163,8 @@ BlockStmt:
 
 
 BlockStmtList:
-        BlockStmtList Statement
-    |   Statement;
+        BlockStmtList Statement StatementTermList
+    |   %empty;
 
 
 FunctionDecl:
@@ -227,7 +230,7 @@ Argument:
 
 
 void yyerror(char const* error) {
-    fprintf(stderr, "%s: token %d on line %d\n", error, yychar, yylineno);
+    fprintf(stderr, "%s: token %s on line %d\n", error, yytext, yylineno);
 }
 
 int main() {

@@ -12,8 +12,10 @@
 /* Characters */
 alpha                           [a-zA-Z_]
 digit                           [0-9]
-newline                         "\n"
-whitespace                      [[:space:]]+
+statement_terminator            {newline}|{semicolon}
+newline                         \n
+semicolon                       ;
+whitespace                      [ \t]
 char                            .
 
 /* Comments */
@@ -44,7 +46,7 @@ operator_array_decl             "[]"
 operator_char                   {operator_numeric}|{operator_bracket}|{operator_other}
 operator_numeric                "+"|"-"|"*"|"/"|"%"|"!"|"<"|">"
 operator_bracket                "["|"]"|"{"|"}"|"("|")"
-operator_other                  ";"|"."|","|"="
+operator_other                  "."|","|"="
 
 /* Types */
 type_int                        int
@@ -78,6 +80,9 @@ string_invalid_double           \"[^"]*
                                     printf("Preprocesser Error: Unterminated Comment\n");
                                     exit(EXIT_FAILURE);
                                 }
+
+{statement_terminator}          return T_STMT_TERMINATOR;
+                                
 
 {operator_char}                 return yytext[0];
 {operator_logical_and}          return OP_AND;
@@ -134,7 +139,7 @@ string_invalid_double           \"[^"]*
                                 }
 
 .                               {
-                                    printf("Lexer Error: Unable to tokenise code on line %d\n", yylineno);
+                                    printf("Lexer Error: Unable to tokenise '%s' on line %d\n", yytext, yylineno);
                                     exit(EXIT_FAILURE);
                                 }
 

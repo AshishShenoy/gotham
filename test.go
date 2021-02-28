@@ -1,8 +1,3 @@
-//  Single line comment
-/*
-    Multi line comment
-*/
-
 package main
 
 import "fmt"
