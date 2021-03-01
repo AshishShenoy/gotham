@@ -19,7 +19,7 @@ var k string = "Hello," + " World!"
 var l bool = ! false
 
 
-var x int = 10
+var x int = - 10
 
 if (x < 10) {
     x = x + 1

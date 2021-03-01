@@ -60,6 +60,10 @@
 %token				OP_ARRAY_DECL 
 
 
+%left                           '+' '-'
+%left                           '*' '/'
+
+
 %%
 
 Program:
@@ -213,13 +217,11 @@ Parameter:
 
 
 PrintStmt:
-        KW_PRINT '(' L_STRING ')'
-    |   KW_PRINT '(' Expression ')';
+        KW_PRINT '(' Expression ')';
 
 
 BlockStmt:
-        '{' OptionalStmtTermList BlockStmtList OptionalStmtTermList '}'
-    |   '{' '}';
+        '{' OptionalStmtTermList BlockStmtList OptionalStmtTermList '}';
 
 
 OptionalStmtTermList:
