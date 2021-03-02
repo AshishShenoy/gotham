@@ -16,3 +16,9 @@ clean:
 run: a.out test
 	@./a.out < test.go
 
+dump: 
+	@yacc -Wno-yacc -Wcounterexamples -d prog.y
+	@yacc -Wno-yacc -Wcounterexamples prog.y
+	@lex prog.l
+	@gcc -lfl lex.yy.c y.tab.c
+	@./a.out

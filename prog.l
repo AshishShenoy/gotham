@@ -12,8 +12,9 @@
 /* Characters */
 alpha                           [a-zA-Z_]
 digit                           [0-9]
-newline                         "\n"
-whitespace                      [[:space:]]+
+newline                         \n
+semicolon                       ;
+whitespace                      [ \t]
 char                            .
 
 /* Comments */
@@ -44,7 +45,7 @@ operator_array_decl             "[]"
 operator_char                   {operator_numeric}|{operator_bracket}|{operator_other}
 operator_numeric                "+"|"-"|"*"|"/"|"%"|"!"|"<"|">"
 operator_bracket                "["|"]"|"{"|"}"|"("|")"
-operator_other                  ";"|"."|","|"="
+operator_other                  "."|","|"="
 
 /* Types */
 type_int                        int
@@ -79,6 +80,10 @@ string_invalid_double           \"[^"]*
                                     exit(EXIT_FAILURE);
                                 }
 
+{newline}                       return T_NEWLINE;
+{semicolon}                     return T_SEMICOLON;
+                                
+
 {operator_char}                 return yytext[0];
 {operator_logical_and}          return OP_AND;
 {operator_logical_or}           return OP_OR;
@@ -104,15 +109,15 @@ string_invalid_double           \"[^"]*
 {type_string}                   return TY_STR;
 
 {bool_literal}                  {
-                                    yylval.L_BOOL = (strcmp(yytext, "true") == 0) ? 1 : 0;
+                                    strcpy(yylval.L_BOOL,(strcmp(yytext, "true") == 0) ? "1" : "0");
                                     return L_BOOLEAN;
                                 }
 {int_literal}                   {
-                                    yylval.L_INT = atoi(yytext);
+                                    strcpy(yylval.L_INT,yytext);
                                     return L_INTEGER;
                                 }
 {float32_literal}               {
-                                    yylval.L_FP = atof(yytext);
+                                    strcpy(yylval.L_FP,yytext);
                                     return L_FLOAT;
                                 }
 {string_literal}                {
@@ -134,7 +139,7 @@ string_invalid_double           \"[^"]*
                                 }
 
 .                               {
-                                    printf("Lexer Error: Unable to tokenise code on line %d\n", yylineno);
+                                    printf("Lexer Error: Unable to tokenise '%s' on line %d\n", yytext, yylineno);
                                     exit(EXIT_FAILURE);
                                 }
 
