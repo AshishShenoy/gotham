@@ -73,29 +73,40 @@
         printf("STACK EMPTY");
     }
 
+    int float_flag = 0;
+    int int_flag = 0;
+    int bool_flag = 0;
+    int str_flag = 0;
 
 %}
 
 
 %union {
+    
     char T_ID[32];
+    char TYPE[10];
     char T_OP;
     short L_BOOL;
     long L_INT;
     double L_FP;
     char L_STR[1024];
+    
+
+    int i_val;
+    float f_val;
+    char* string;
 };
 
 
 %start				Program
 
 
-%token				T_IDENTIFIER
+%token  <T_ID>				T_IDENTIFIER
 
-%token				L_BOOLEAN
-%token				L_INTEGER
-%token				L_FLOAT
-%token				L_STRING
+%token	<L_BOOL>			L_BOOLEAN
+%token	<L_INT>			L_INTEGER
+%token	<L_FP>			L_FLOAT
+%token	<L_STR>			L_STRING
 
 %token				TY_BOOL
 %token				TY_INT
@@ -120,7 +131,10 @@
 %token				OP_LEQ 
 %token				OP_ARRAY_DECL 
 
-
+%type <TYPE>  Type
+%type <L_BOOL> RelExpression
+%type <L_FP>   Expression
+%type <L_STR>  Literal
 %%
 
 Program:
@@ -172,41 +186,44 @@ VarDecl:
 
 
 Type:
-        TY_INT
-    |   TY_FP
-    |   TY_STR
-    |   TY_BOOL;
+        TY_INT      { strcpy($$, "int");}
+    |   TY_FP       { strcpy($$, "float32"); }
+    |   TY_STR      { strcpy($$, "str");}
+    |   TY_BOOL     { strcpy($$, "bool");}
+    ;
 
 
 Literal:
-        L_FLOAT
-    |   L_BOOLEAN
-    |   L_INTEGER
-    |   L_STRING;
+        L_FLOAT     { float_flag = 1; sprintf($$, "%f", $1);}
+    |   L_BOOLEAN   { bool_flag = 1; sprintf($$, "%d", $1);}
+    |   L_INTEGER   { int_flag = 1; sprintf($$, " %d", $1);}
+    |   L_STRING   { str_flag = 1; strcpy($$,$1);}
+    ;
 
 
 Expression:
-        '(' Expression ')' 
-    |   Expression '+' Expression
-    |   Expression '-' Expression
-    |   Expression '*' Expression
-    |   Expression '/' Expression
-    |   Expression '%' Expression
-    |   RelExpression
-    |   Literal
-    |   T_IDENTIFIER;
-
+        '(' Expression ')'          { $$ = ($$);}
+    |   Expression '+' Expression   { $$ = $1 + $3;}
+    |   Expression '-' Expression   { $$ = $1 - $3;}
+    |   Expression '*' Expression   { $$ = $1 * $3;}
+    |   Expression '/' Expression   { $$ = $1 / $3;}
+    |   Expression '%' Expression   { if(int_flag) {$$ = (int)$1 % (int)$3;};}
+    |   RelExpression               { $$ = $1;}
+    |   Literal                     { if(int_flag || float_flag || bool_flag){ $$ = atof($1);}}
+    |   T_IDENTIFIER                { ;/* search in sym table value of id and set $$ to it */;}
+    ;
 
 RelExpression:
-        Expression '<' Expression
-    |   Expression '>' Expression
-    |   Expression OP_LEQ Expression
-    |   Expression OP_GEQ Expression
-    |   Expression OP_EQ Expression
-    |   Expression OP_NEQ Expression
-    |   RelExpression OP_OR RelExpression
-    |   RelExpression OP_AND RelExpression
-    |   '!' Expression;
+        Expression '<' Expression           { $$ = ($1 < $3);}
+    |   Expression '>' Expression           { $$ = ($1 > $3);}
+    |   Expression OP_LEQ Expression        { $$ = ($1 <= $3);}
+    |   Expression OP_GEQ Expression        { $$ = ($1 >= $3);}
+    |   Expression OP_EQ Expression         { $$ = ($1 == $3);}
+    |   Expression OP_NEQ Expression        { $$ = ($1 != $3);}
+    |   RelExpression OP_OR RelExpression   { $$ = $1 || $3;}
+    |   RelExpression OP_AND RelExpression  { $$ = $1 && $3;}
+    |   '!' Expression                      { if($2 != 0){ $$ = 0;} else { $$ = 1;};}
+    ;                    
 
 
 PrintStmt:
