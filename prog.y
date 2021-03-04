@@ -27,9 +27,21 @@
 
     int symTBIndex[STACK_SIZE];
     
-
+    int check_sym_tbl(char* id){
+        int indx = symTBIndex[stackPtr];
+        for(int i = 0; i < indx; i++){
+            if( strcmp(id, ST[i][stackPtr].id) == 0){
+                return 0;
+            }
+        }
+        return 1;
+    }
     void insert_symbol(char* id, char* type){
         if(stackPtr == -1){
+            return;
+        }
+        if(!check_sym_tbl(id)){
+            yyerror("Identifier already declared\n");
             return;
         }
         int indx = symTBIndex[stackPtr];
@@ -46,7 +58,13 @@
             return;
         }
         int indx = symTBIndex[stackPtr];
-        printf("%s\t%s\t\t%s\n","Name", "Type", "Value");
+        
+        if(indx == 0){
+            return;
+        }
+        
+        printf("%s\t%s\n","Name", "Type");
+        
         for(int i = 0; i < indx; i++){
             printf("%s\t%s\t\t\n",ST[i][stackPtr].id, ST[i][stackPtr].type);
         }
@@ -334,7 +352,7 @@ PrintStmt:
 
 
 BlockStmt:
-        '{' { push_block(); }OptionalStmtTermList BlockStmtList OptionalStmtTermList '}' {pop_block();};
+        '{' { push_block(); }OptionalStmtTermList BlockStmtList OptionalStmtTermList  '}' { pop_block();};
 
 
 OptionalStmtTermList:

@@ -37,13 +37,15 @@ func main(abc int) int {
     var bb float32 = 1.1 / 2.2
     var cc string = "Hello, World!"
     var dd bool = true
-
+	var aa float32 = 0.0
+	
     fmt.Print("Hello, World!\n")
     fmt.Println(cc)
 
     for var int3 int = 0; int3 < 4; int3 + 1
     {
-        ;
+		;
+		var abc string
         fmt.Println(int3)
         ;
     } 
