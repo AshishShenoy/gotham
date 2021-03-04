@@ -155,7 +155,7 @@
 %%
 
 Program:
-        PackageDecl ImportDeclList GlobalStmtList;
+        PackageDecl ImportDeclList GlobalStmtList       {pop_block();};
         
 
 PackageDecl:

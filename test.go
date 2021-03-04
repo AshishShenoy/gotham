@@ -51,4 +51,9 @@ func main(abc int) int {
     return 0
 }
 
+
+func random() int {
+	var ck int = 10;
+	var f float32 = 9.4;
+}
 main(10)
