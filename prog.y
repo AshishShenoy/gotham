@@ -28,14 +28,14 @@
     int symTBIndex[STACK_SIZE];
     
 
-    void insert_symbol(char* id, char* type, char* value){
+    void insert_symbol(char* id, char* type){
         if(stackPtr == -1){
             return;
         }
         int indx = symTBIndex[stackPtr];
         strcpy(ST[indx][stackPtr].id, id);
         strcpy(ST[indx][stackPtr].type, type);
-        strcpy(ST[indx][stackPtr].value, value);
+        //strcpy(ST[indx][stackPtr].value, value);
         symTBIndex[stackPtr] = indx + 1;
         return;
     }
@@ -48,7 +48,7 @@
         int indx = symTBIndex[stackPtr];
         printf("%s\t%s\t\t%s\n","Name", "Type", "Value");
         for(int i = 0; i < indx; i++){
-            printf("%s\t%s\t\t%s",ST[i][stackPtr].id, ST[i][stackPtr].type, ST[i][stackPtr].value);
+            printf("%s\t%s\t\t\n",ST[i][stackPtr].id, ST[i][stackPtr].type);
         }
         printf("\n\n");
         return;
@@ -67,6 +67,7 @@
     void pop_block(){
         if(stackPtr != -1){
             disp_symtbl();
+            symTBIndex[stackPtr] = 0;
             stackPtr--;
             return;
         }
@@ -196,8 +197,9 @@ Statement:
 
 
 VarDecl:
-        KW_VAR T_IDENTIFIER Type '=' Expression
-    |   KW_VAR T_IDENTIFIER Type;
+        KW_VAR T_IDENTIFIER Type '=' Expression       { insert_symbol($2, $3);}
+    |   KW_VAR T_IDENTIFIER Type                     { insert_symbol($2, $3);}
+    ;
 
 
 Type:
@@ -279,7 +281,7 @@ UnaryExpression:
 
 Factor:
         T_IDENTIFIER                           {/*search sym tbl */;}
-    |   FunctionCallStmt                       { /* I have no fucking clue */;}
+    |   FunctionCallStmt                       { /* I have no clue */;}
     |   Literal                                { strcpy($$,$1);}
 
 
@@ -332,7 +334,7 @@ PrintStmt:
 
 
 BlockStmt:
-        '{' OptionalStmtTermList BlockStmtList OptionalStmtTermList '}';
+        '{' { push_block(); }OptionalStmtTermList BlockStmtList OptionalStmtTermList '}' {pop_block();};
 
 
 OptionalStmtTermList:
