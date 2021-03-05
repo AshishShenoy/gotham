@@ -37,25 +37,27 @@ func main(abc int) int {
     var bb float32 = 1.1 / 2.2
     var cc string = "Hello, World!"
     var dd bool = true
-	var aa float32 = 0.0
-	
+
+    var abc int
+
     fmt.Print("Hello, World!\n")
     fmt.Println(cc)
 
-    for var int3 int = 0; int3 < 4; int3 + 1
+    for var ii int = 0; ii < 4; ii + 1
     {
-		;
-		var abc string
-        fmt.Println(int3)
+	    ;
+        var abc int
+        fmt.Println(ii)
         ;
-    } 
-    
+    }
     return 0
 }
 
 
 func random() int {
-	var ck int = 10;
-	var f float32 = 9.4;
+    var e int = 10;
+    var f float32 = 9.4;
 }
+
+
 main(10)

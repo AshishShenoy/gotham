@@ -2,7 +2,10 @@
 a.out
 
 # Generated code and files
-output.txt
+symbol_table.txt
 lex.yy.c
 y.tab.c
 y.tab.h
+
+# Development Environment files
+Session.vim

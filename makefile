@@ -11,14 +11,17 @@ y.tab.c: prog.y
 	@yacc -Wno-yacc prog.y
 
 clean:
-	rm -f a.out lex.yy.c y.tab.c y.tab.h
+	rm -f a.out lex.yy.c y.tab.c y.tab.h symbol_table.txt
 
-run: a.out test
+run: a.out test.go
 	@./a.out < test.go
+	@expand -t 8 symbol_table.txt > temp.txt
+	@cat temp.txt > symbol_table.txt
+	@rm temp.txt
 
-dump: 
+dump: prog.l prog.y
+	@lex prog.l
 	@yacc -Wno-yacc -Wcounterexamples -d prog.y
 	@yacc -Wno-yacc -Wcounterexamples prog.y
-	@lex prog.l
 	@gcc -lfl lex.yy.c y.tab.c
 	@./a.out
