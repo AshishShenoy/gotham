@@ -1,3 +1,8 @@
+// Single line comment
+/*
+    Multiline comment
+*/
+
 package main
 
 import "fmt"
@@ -39,13 +44,14 @@ func main(abc int) int {
     var dd bool = true
 
     var abc int
+    var cc float32
 
     fmt.Print("Hello, World!\n")
     fmt.Println(cc)
 
     for var ii int = 0; ii < 4; ii + 1
     {
-	    ;
+        ;
         var abc int
         fmt.Println(ii)
         ;

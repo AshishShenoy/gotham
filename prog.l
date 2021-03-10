@@ -73,7 +73,6 @@ string_invalid_double           \"[^"]*
 
 
 {whitespace}                    ;
-
 {comment_valid}                 ;
 {comment_invalid}               {
                                     printf("Preprocesser Error: Unterminated Comment\n");

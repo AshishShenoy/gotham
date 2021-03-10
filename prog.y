@@ -242,7 +242,7 @@ Program:
         
 
 PackageDecl:
-        KW_PACKAGE T_IDENTIFIER StatementTermList;
+        OptionalStmtTermList KW_PACKAGE T_IDENTIFIER StatementTermList;
 
 
 StatementTermList:
