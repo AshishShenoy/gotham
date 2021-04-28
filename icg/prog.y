@@ -74,18 +74,6 @@
 %token                  OP_ARRAY_DECL 
 
 
-// %type <L_BOOL>          RelExpression
-// %type <L_FP>            Expression
-// %type <L_FP>            SumExpression
-// %type <L_FP>            MulExpression
-// %type <L_STR>           UnaryExpression
-// %type <L_FP>            AssignmentExpression
-// %type <L_FP>            SimpleExpression
-// %type <L_BOOL>          AndExpression
-// %type <L_BOOL>          UnaryRelExpression
-// %type <L_STR>           Literal
-// %type <L_STR>           Factor
-
 %type <L_STR>           VarDecl
 %type <L_STR>           Statement
 %type <L_STR>           BlockStmt
@@ -395,9 +383,6 @@ void yyerror(char const* error) {
 }
 
 int main() {
-    PT.stack_ptr = 0;
-    strcpy(PT.scope_names[PT.stack_ptr], "global");
-
     fp = fopen("icg.txt", "w");
 
     yyparse();
