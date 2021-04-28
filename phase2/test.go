@@ -25,3 +25,15 @@ for var j float32 = 4.2 ; j < 6.9; j = j + 0.1
 {
 	jj = jj + 0.7
 }
+
+var c int = 4
+
+// Nested conditionals and loops
+for var k int = 2 ; k < 10; k = k + 1
+{
+	if (k == 9) {
+		c = c + 5
+	} else {
+		c = c + 1
+	}
+}

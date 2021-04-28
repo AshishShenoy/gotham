@@ -17,7 +17,8 @@
 
     int temp_ctr = 1;
     int branch_ctr = 1;
-    int end_ctr = 1;
+    int if_end_ctr = 1;
+    int for_end_ctr = 1;
     int loop_ctr = 1;
 
     bool is_end_of_if_stmt = true;
@@ -339,11 +340,11 @@ IfStmt:
         KW_IF '(' Expression ')' OptionalNewlines {
             fprintf(fp, "IF FALSE %s GOTO B%d\n", $3, branch_ctr);
         } BlockStmt {
-            fprintf(fp, "GOTO END%d\n", end_ctr);
+            fprintf(fp, "GOTO ENDIF%d\n", if_end_ctr);
             fprintf(fp, "B%d:\n", branch_ctr++);
         } OptionalElse {
             if (is_end_of_if_stmt) {
-                fprintf(fp, "END%d:\n", end_ctr++);
+                fprintf(fp, "ENDIF%d:\n", if_end_ctr++);
             }
         };
     ;
@@ -363,14 +364,14 @@ ForStmt:
         KW_FOR VarDecl T_SEMICOLON {
             fprintf(fp, "COND%d:\n", loop_ctr);
         } Expression {
-            fprintf(fp, "IF FALSE %s GOTO END%d\n", $5, end_ctr);
+            fprintf(fp, "IF FALSE %s GOTO ENDFOR%d\n", $5, for_end_ctr);
             fprintf(fp, "GOTO BLOCK%d\n", loop_ctr);
             fprintf(fp, "INC%d:\n", loop_ctr);
         } T_SEMICOLON Expression { 
             fprintf(fp, "GOTO COND%d\n", loop_ctr);
         } OptionalNewlines { fprintf(fp, "BLOCK%d:\n", loop_ctr); } BlockStmt {
             fprintf(fp, "GOTO INC%d\n", loop_ctr);            
-            fprintf(fp, "END%d\n", end_ctr++);
+            fprintf(fp, "ENDFOR%d:\n", for_end_ctr);
             loop_ctr++;
         };
 
