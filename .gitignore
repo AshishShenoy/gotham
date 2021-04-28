@@ -3,9 +3,11 @@ a.out
 
 # Generated code and files
 symbol_table.txt
+icg.txt
 lex.yy.c
 y.tab.c
 y.tab.h
 
 # Development Environment files
 Session.vim
+.vscode
