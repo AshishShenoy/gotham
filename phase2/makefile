@@ -17,3 +17,6 @@ clean:
 
 run: a.out test.go
 	@./a.out < test.go
+	@expand -t 8 icg.txt > temp.txt
+	@cat temp.txt > icg.txt
+	@rm temp.txt

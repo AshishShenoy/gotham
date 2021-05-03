@@ -15,6 +15,7 @@
 
     FILE *fp;
 
+    int inst_ctr = 1;
     int temp_ctr = 1;
     int branch_ctr = 1;
     int if_end_ctr = 1;
@@ -143,7 +144,7 @@ Statement:
 
 
 VarDecl:
-        KW_VAR T_IDENTIFIER Type '=' Expression     { fprintf(fp, "%s = %s\n", $2, $5); }
+        KW_VAR T_IDENTIFIER Type '=' Expression     { fprintf(fp, "[%04d] ASSIGN\t%s\t\t%s\n", inst_ctr++, $5, $2); }
     |   KW_VAR T_IDENTIFIER Type
     ;
 
@@ -164,14 +165,14 @@ Expression:
 
 
 AssignmentExpression:
-        T_IDENTIFIER '=' Expression                 { fprintf(fp, "%s = %s\n", $1, $3); }
+        T_IDENTIFIER '=' Expression                 { fprintf(fp, "[%04d] ASSIGN\t%s\t\t%s\n", inst_ctr++, $3, $1); }
     ;
 
 
 SimpleExpression:
         SimpleExpression OP_OR AndExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = %s || %s\n", temp_ctr++, $1, $3);
+            fprintf(fp, "[%04d] OR\t%s\t%s\tt%d\n", inst_ctr++, $1, $3, temp_ctr++);
         }
     |   AndExpression                               { strcpy($$, $1); }
     ;
@@ -180,7 +181,7 @@ SimpleExpression:
 AndExpression:
         AndExpression OP_AND UnaryRelExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = %s && %s\n", temp_ctr++, $1, $3);
+            fprintf(fp, "[%04d] AND\t%s\t%s\tt%d\n", inst_ctr++, $1, $3, temp_ctr++);
         }
     |   UnaryRelExpression                          { strcpy($$, $1); }
     ;
@@ -189,7 +190,7 @@ AndExpression:
 UnaryRelExpression:
         '!' UnaryRelExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = ! %s\n", temp_ctr++, $2);
+            fprintf(fp, "[%04d] NOT\t%s\t\tt%d\n", inst_ctr++, $2, temp_ctr++);
         }
     |   RelExpression                               { strcpy($$, $1); }
     ;
@@ -198,27 +199,27 @@ UnaryRelExpression:
 RelExpression:
         SumExpression OP_EQ SumExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = %s == %s\n", temp_ctr++, $1, $3);
+            fprintf(fp, "[%04d] EQ\t%s\t%s\tt%d\n", inst_ctr++, $1, $3, temp_ctr++);
         }
     |   SumExpression OP_NEQ SumExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = %s != %s\n", temp_ctr++, $1, $3);
+            fprintf(fp, "[%04d] NEQ\t%s\t%s\tt%d\n", inst_ctr++, $1, $3, temp_ctr++);
         }
     |   SumExpression '<' SumExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = %s < %s\n", temp_ctr++, $1, $3);
+            fprintf(fp, "[%04d] LT\t%s\t%s\tt%d\n", inst_ctr++, $1, $3, temp_ctr++);
         }
     |   SumExpression OP_LEQ SumExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = %s <= %s\n", temp_ctr++, $1, $3);
+            fprintf(fp, "[%04d] LEQ\t%s\t%s\tt%d\n", inst_ctr++, $1, $3, temp_ctr++);
         }
     |   SumExpression '>' SumExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = %s > %s\n", temp_ctr++, $1, $3);
+            fprintf(fp, "[%04d] GT\t%s\t%s\tt%d\n", inst_ctr++, $1, $3, temp_ctr++);
         }
     |   SumExpression OP_GEQ SumExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = %s >= %s\n", temp_ctr++, $1, $3);
+            fprintf(fp, "[%04d] GEQ\t%s\t%s\tt%d\n", inst_ctr++, $1, $3, temp_ctr++);
         }
     |   SumExpression                               { strcpy($$, $1); }
     ;
@@ -228,11 +229,11 @@ RelExpression:
 SumExpression:
         SumExpression '+' MulExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = %s + %s\n", temp_ctr++, $1, $3);
+            fprintf(fp, "[%04d] ADD\t%s\t%s\tt%d\n", inst_ctr++, $1, $3, temp_ctr++);
         }
     |   SumExpression '-' MulExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = %s - %s\n", temp_ctr++, $1, $3);
+            fprintf(fp, "[%04d] SUB\t%s\t%s\tt%d\n", inst_ctr++, $1, $3, temp_ctr++);
         }
     |   MulExpression                               { strcpy($$, $1); }
     ;
@@ -241,15 +242,15 @@ SumExpression:
 MulExpression:
         MulExpression '*' UnaryExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = %s * %s\n", temp_ctr++, $1, $3);
+            fprintf(fp, "[%04d] MUL\t%s\t%s\tt%d\n", inst_ctr++, $1, $3, temp_ctr++);
         }
     |   MulExpression '/' UnaryExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = %s / %s\n", temp_ctr++, $1, $3);
+            fprintf(fp, "[%04d] DIV\t%s\t%s\tt%d\n", inst_ctr++, $1, $3, temp_ctr++);
         }
     |   MulExpression '%' UnaryExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = %s %% %s\n", temp_ctr++, $1, $3);
+            fprintf(fp, "[%04d] MOD\t%s\t%s\tt%d\n", inst_ctr++, $1, $3, temp_ctr++);
         }
     |   UnaryExpression                             { strcpy($$, $1); }
     ;
@@ -258,11 +259,11 @@ MulExpression:
 UnaryExpression:
         '+' UnaryExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = + %s\n", temp_ctr++, $2);
+            fprintf(fp, "[%04d] ASSIGN\t%s\t\tt%d\n", inst_ctr++, $2, temp_ctr++);
         }
     |   '-' UnaryExpression {
             sprintf($$, "t%d", temp_ctr);
-            fprintf(fp, "t%d = - %s\n", temp_ctr++, $2);
+            fprintf(fp, "[%04d] ASSIGN\t-%s\t\tt%d\n", inst_ctr++, $2, temp_ctr++);
         }
     |   Factor                                      { strcpy($$, $1); }
     ;
@@ -338,9 +339,9 @@ ReturnStmt:
 
 IfStmt:
         KW_IF '(' Expression ')' OptionalNewlines {
-            fprintf(fp, "IF FALSE %s GOTO B%d\n", $3, branch_ctr);
+            fprintf(fp, "[%04d] BEQ\t%s\t0\tB%d\n", inst_ctr++, $3, branch_ctr);
         } BlockStmt {
-            fprintf(fp, "GOTO ENDIF%d\n", if_end_ctr);
+            fprintf(fp, "[%04d] GOTO\t\t\tENDIF%d\n", inst_ctr++,  if_end_ctr);
             fprintf(fp, "B%d:\n", branch_ctr++);
         } OptionalElse {
             if (is_end_of_if_stmt) {
@@ -364,14 +365,16 @@ ForStmt:
         KW_FOR VarDecl T_SEMICOLON {
             fprintf(fp, "COND%d:\n", loop_ctr);
         } Expression {
-            fprintf(fp, "IF FALSE %s GOTO ENDFOR%d\n", $5, for_end_ctr);
-            fprintf(fp, "GOTO BLOCK%d\n", loop_ctr);
+            fprintf(fp, "[%04d] BEQ\t%s\t0\tENDFOR%d\n", inst_ctr++, $5, for_end_ctr++);
+            fprintf(fp, "[%04d] GOTO\t\t\tBLOCK%d\n", inst_ctr++,  loop_ctr);
             fprintf(fp, "INC%d:\n", loop_ctr);
         } T_SEMICOLON Expression { 
-            fprintf(fp, "GOTO COND%d\n", loop_ctr);
-        } OptionalNewlines { fprintf(fp, "BLOCK%d:\n", loop_ctr); } BlockStmt {
-            fprintf(fp, "GOTO INC%d\n", loop_ctr);            
-            fprintf(fp, "ENDFOR%d:\n", for_end_ctr);
+            fprintf(fp, "[%04d] GOTO\t\t\tCOND%d\n", inst_ctr++,  loop_ctr);
+        } OptionalNewlines {
+            fprintf(fp, "BLOCK%d:\n", loop_ctr++);
+        } BlockStmt {
+            fprintf(fp, "[%04d] GOTO\t\t\tINC%d\n", inst_ctr++,  loop_ctr--);
+            fprintf(fp, "ENDFOR%d:\n", --for_end_ctr);
             loop_ctr++;
         };
 
