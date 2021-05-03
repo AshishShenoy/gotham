@@ -50,16 +50,25 @@ for var l int = 10 ; l > 1 ; l = l - 1
 }
 
 // Nested if statement
-var f int = 12
+var f int = "FFFFFFFFFF"
 if (f % 3) {
 	if (f % 4) {
+		if (f % 5) {
+			f = f % f
+		}
 		f = f * f
 	} else {
 		f = f / f
 	}
 }
 
+
 func main() int {
-	var toobee bool = true
-	toobee = toobee || ! toobee
+	var a int = 10 + 20 + 30
+	var b int
+	var c int = b
+	var d int = a + 10
+	var e int = c * 2
+	var f int = a + 10
+	var g int = d + a
 }
