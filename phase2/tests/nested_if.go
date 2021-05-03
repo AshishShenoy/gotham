@@ -1,11 +1,9 @@
-
 package main
 
 import "fmt"
 
 
-// Nested if statement
-var f int = "FFFFFFFFFF"
+var f int = 60
 if (f % 3) {
 	if (f % 4) {
 		if (f % 5) {

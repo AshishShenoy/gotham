@@ -3,7 +3,6 @@ package main
 import "fmt"
 
 
-// if-else statement
 var a int = 5
 if ( a > 10 ) {
 	var aa int = true || false && -40

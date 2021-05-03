@@ -3,8 +3,6 @@ package main
 import "fmt"
 
 
-
-// for loop
 var c float32 = 1.1
 for var j float32 = 4.2 ; j < 6.9; j = j + 0.1
 {
