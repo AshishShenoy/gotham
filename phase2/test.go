@@ -40,7 +40,7 @@ for var k int = 2 ; k < 10; k = k + 1
 }
 
 // Nested loops
-var e int = 5
+var e int = 7
 for var l int = 10 ; l > 1 ; l = l - 1
 {
 	for var m int = 5 ; m > 2 ; m = m % 2
@@ -49,8 +49,9 @@ for var l int = 10 ; l > 1 ; l = l - 1
 	}
 }
 
+
 // Nested if statement
-var f int = "FFFFFFFFFF"
+var f int = 60
 if (f % 3) {
 	if (f % 4) {
 		if (f % 5) {
@@ -62,7 +63,7 @@ if (f % 3) {
 	}
 }
 
-
+// Optimisation test case
 func main() int {
 	var a int = 10 + 20 + 30
 	var b int

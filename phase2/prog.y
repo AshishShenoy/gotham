@@ -15,11 +15,16 @@
 
     FILE *fp;
 
+    int if_stack_pointer = 1;
+    int if_max_depth = 1;
+
+    int for_stack_pointer = 1;
+    int for_max_depth = 1;
+
     int inst_ctr = 1;
     int temp_ctr = 1;
     int branch_ctr = 1;
     int if_end_ctr = 1;
-    int for_end_ctr = 1;
     int loop_ctr = 1;
 
     bool is_end_of_if_stmt = true;
@@ -339,13 +344,19 @@ ReturnStmt:
 
 IfStmt:
         KW_IF '(' Expression ')' OptionalNewlines {
-            fprintf(fp, "[%04d] BEQ\t%s\t0\tB%d\n", inst_ctr++, $3, branch_ctr);
+            fprintf(fp, "[%04d] BEQ\t%s\t0\tB%d\n", inst_ctr++, $3, branch_ctr++);
+            if_stack_pointer++;
+            if_max_depth++;
         } BlockStmt {
+            if_stack_pointer--;
             fprintf(fp, "[%04d] GOTO\t\t\tENDIF%d\n", inst_ctr++,  if_end_ctr);
-            fprintf(fp, "B%d:\n", branch_ctr++);
+            fprintf(fp, "B%d:\n", branch_ctr + (if_stack_pointer - if_max_depth));
         } OptionalElse {
             if (is_end_of_if_stmt) {
                 fprintf(fp, "ENDIF%d:\n", if_end_ctr++);
+                if (if_stack_pointer == 1) {
+                    if_max_depth = 1;
+                }
             }
         };
     ;
@@ -365,17 +376,23 @@ ForStmt:
         KW_FOR VarDecl T_SEMICOLON {
             fprintf(fp, "COND%d:\n", loop_ctr);
         } Expression {
-            fprintf(fp, "[%04d] BEQ\t%s\t0\tENDFOR%d\n", inst_ctr++, $5, for_end_ctr++);
+            fprintf(fp, "[%04d] BEQ\t%s\t0\tENDFOR%d\n", inst_ctr++, $5, loop_ctr);
             fprintf(fp, "[%04d] GOTO\t\t\tBLOCK%d\n", inst_ctr++,  loop_ctr);
             fprintf(fp, "INC%d:\n", loop_ctr);
         } T_SEMICOLON Expression { 
             fprintf(fp, "[%04d] GOTO\t\t\tCOND%d\n", inst_ctr++,  loop_ctr);
         } OptionalNewlines {
             fprintf(fp, "BLOCK%d:\n", loop_ctr++);
+            for_stack_pointer++;
+            for_max_depth++;
         } BlockStmt {
-            fprintf(fp, "[%04d] GOTO\t\t\tINC%d\n", inst_ctr++,  loop_ctr--);
-            fprintf(fp, "ENDFOR%d:\n", --for_end_ctr);
-            loop_ctr++;
+            for_stack_pointer--;
+            fprintf(fp, "[%04d] GOTO\t\t\tINC%d\n", inst_ctr++,  loop_ctr + (for_stack_pointer - for_max_depth));
+            fprintf(fp, "ENDFOR%d:\n", loop_ctr + (for_stack_pointer - for_max_depth));
+
+            if (for_stack_pointer == 1) {
+                for_max_depth = 1;
+            }
         };
 
 
