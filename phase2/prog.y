@@ -321,7 +321,7 @@ Parameter:
 PrintStmt:
         KW_PRINT '(' Expression ')' {
             fprintf(fp, "[%04d] PARAMS\t\t\t%s\n", inst_ctr++, $3);
-            fprintf(fp, "[%04d] CALL\t\t\tPRINT\n", inst_ctr++, $3);
+            fprintf(fp, "[%04d] CALL\t\t\tPRINT\n", inst_ctr++);
         }
     ;
 

@@ -20,7 +20,7 @@ run: a.out test.go
 	@expand -t 8 icg.txt > temp.txt
 	@cat temp.txt > icg.txt
 	@rm temp.txt
-	@python icg_optimize.py icg.txt
+	@python3 icg_optimize.py
 
 test_for : a.out tests/for.go
 	@./a.out < tests/for.go
