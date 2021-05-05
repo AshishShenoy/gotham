@@ -7,7 +7,8 @@ icg.txt
 lex.yy.c
 y.tab.c
 y.tab.h
-before_optimization.txt
+optimization_steps.txt
+optimized_icg.txt
 
 # Development Environment files
 Session.vim

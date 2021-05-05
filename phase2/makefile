@@ -13,7 +13,7 @@ y.tab.c: prog.y
 	@yacc $(YFLAGS) prog.y
 
 clean:
-	rm -f a.out lex.yy.c y.tab.c y.tab.h icg.txt
+	rm -f a.out lex.yy.c y.tab.c y.tab.h icg.txt optimized_icg.txt optimization_steps.txt
 
 run: a.out test.go
 	@./a.out < test.go
@@ -33,7 +33,6 @@ test_if_else : a.out tests/if_else.go
 	@expand -t 8 icg.txt > temp.txt
 	@cat temp.txt > icg.txt
 	@rm temp.txt
-
 
 test_if_else_if : a.out tests/if_else_if.go
 	@./a.out < tests/if_else_if.go
