@@ -20,6 +20,15 @@ def preprocess_code(code):
     return quad_code
 
 
+# Checks if a string can be safely converted to an integer.
+def is_integer(string):
+    try:
+        int(string)
+        return True
+    except:
+        return False
+
+
 # Performs constant folding by replacing arithmetic operations on
 # constants with constant assignments.
 # Does not change the number of instructions.
@@ -28,15 +37,13 @@ def fold_constants(code):
     for instr in code:
         if len(instr) > 1:
             if instr[1] in const_folding_operations:
-                try:
+                if is_integer(instr[2]) and is_integer(instr[3]):
                     a = int(instr[2])
                     b = int(instr[3])
 
                     constant = int(eval(f"{a}{const_folding_operations[instr[1]]}{b}"))
                     op_code.append([instr[0], "ASSIGN", str(constant), instr[4]])
                     continue
-                except ValueError:
-                    pass
 
         op_code.append(instr)
 
@@ -55,15 +62,15 @@ def propagate_constants(code):
     for instr in code:
         if len(instr) > 1:
             if instr[1] == "ASSIGN":
-                try:
+                if is_integer(instr[2]):
                     constant = int(instr[2])
                     propagating_constants[instr[3]] = constant
                     op_code.append(instr)
                     continue
-                except ValueError:
+                else:
                     if instr[3] in propagating_constants:
                         propagating_constants.pop(instr[3])
-
+            
             if instr[2] in propagating_constants:
                 instr[2] = str(propagating_constants[instr[2]])
 
@@ -87,13 +94,9 @@ def propagate_variables(code):
     for instr in code:
         if len(instr) > 1:
             if instr[1] == "ASSIGN":
-                try:
-                    src = int(instr[2])
-                except:
+                if not is_integer(instr[2]):
                     instr[2] = propagating_variables.get(instr[2], instr[2])
-                    try:
-                        dest = int(instr[3])
-                    except:
+                    if not is_integer(instr[3]):
                         instr[3] = propagating_variables.get(instr[3], instr[3])
                         propagating_variables[instr[3]] = instr[2]
             else:
@@ -121,9 +124,7 @@ def eliminate_dead_code(code):
 
     for instr in code:
         if len(instr) > 1 and instr[1] == "PARAMS":
-            try:
-                int(instr[2])
-            except:
+            if not is_integer(instr[2]):
                 print_variables.add(instr[2])
 
     alive_variables = set(print_variables)
@@ -138,9 +139,7 @@ def eliminate_dead_code(code):
 
                 if dest_var in alive_variables:
                     for var in src_vars:
-                        try:
-                            int(var)
-                        except ValueError:
+                        if not is_integer(var):
                             alive_variables.add(var)
 
     for instr in code:
