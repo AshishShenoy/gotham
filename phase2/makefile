@@ -1,7 +1,8 @@
 YFLAGS=-Wno-yacc -Wno-other -Wno-conflicts-sr
+BIN=gotham
 
-a.out: lex.yy.c y.tab.c
-	@gcc -lfl lex.yy.c y.tab.c
+$(BIN): lex.yy.c y.tab.c
+	@gcc -lfl lex.yy.c y.tab.c -o $(BIN)
 
 lex.yy.c: prog.l y.tab.h
 	@lex prog.l
@@ -13,54 +14,54 @@ y.tab.c: prog.y
 	@yacc $(YFLAGS) prog.y
 
 clean:
-	rm -f a.out lex.yy.c y.tab.c y.tab.h icg.txt optimized_icg.txt optimization_steps.txt
+	rm -f $(BIN) lex.yy.c y.tab.c y.tab.h icg.txt optimized_icg.txt optimization_steps.txt
 
-run: a.out test.go
-	@./a.out < test.go
+run: $(BIN) test.go
+	@./$(BIN) < test.go
 	@expand -t 8 icg.txt > temp.txt
 	@cat temp.txt > icg.txt
 	@rm temp.txt
 	@python3 icg_optimize.py
 
-test_for : a.out tests/for.go
-	@./a.out < tests/for.go
+test_for : $(BIN) tests/for.go
+	@./$(BIN) < tests/for.go
 	@expand -t 8 icg.txt > temp.txt
 	@cat temp.txt > icg.txt
 	@rm temp.txt
 
-test_if_else : a.out tests/if_else.go
-	@./a.out < tests/if_else.go
+test_if_else : $(BIN) tests/if_else.go
+	@./$(BIN) < tests/if_else.go
 	@expand -t 8 icg.txt > temp.txt
 	@cat temp.txt > icg.txt
 	@rm temp.txt
 
-test_if_else_if : a.out tests/if_else_if.go
-	@./a.out < tests/if_else_if.go
+test_if_else_if : $(BIN) tests/if_else_if.go
+	@./$(BIN) < tests/if_else_if.go
 	@expand -t 8 icg.txt > temp.txt
 	@cat temp.txt > icg.txt
 	@rm temp.txt
 
-test_nested_if : a.out tests/nested_if.go
-	@./a.out < tests/nested_if.go
+test_nested_if : $(BIN) tests/nested_if.go
+	@./$(BIN) < tests/nested_if.go
 	@expand -t 8 icg.txt > temp.txt
 	@cat temp.txt > icg.txt
 	@rm temp.txt
 
 
-test_nested_for : a.out tests/nested_for.go
-	@./a.out < tests/nested_for.go
+test_nested_for : $(BIN) tests/nested_for.go
+	@./$(BIN) < tests/nested_for.go
 	@expand -t 8 icg.txt > temp.txt
 	@cat temp.txt > icg.txt
 	@rm temp.txt
 
-test_optimisation : a.out tests/optimisation.go
-	@./a.out < tests/optimisation.go
+test_optimisation : $(BIN) tests/optimisation.go
+	@./$(BIN) < tests/optimisation.go
 	@expand -t 8 icg.txt > temp.txt
 	@cat temp.txt > icg.txt
 	@rm temp.txt
 
-test_nested_for_if : a.out tests/nested_for_if.go
-	@./a.out < tests/nested_for_if.go
+test_nested_for_if : $(BIN) tests/nested_for_if.go
+	@./$(BIN) < tests/nested_for_if.go
 	@expand -t 8 icg.txt > temp.txt
 	@cat temp.txt > icg.txt
 	@rm temp.txt

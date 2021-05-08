@@ -1,4 +1,6 @@
-# Go Compiler
+# Gotham
+
+_Not the Go compiler we need, but the Go compiler we deserve._
 
 A miniature Go compiler written using lex and yacc. Project component for the
 UE18CS351 Compiler Design course.
@@ -88,7 +90,7 @@ make
 
 Then the compiler accepts a Go program through stdin:
 ```
-./a.out < test.go
+./gotham < test.go
 ```
 
 ### Using docker
@@ -98,16 +100,16 @@ A docker container can be used to isolate the running environment.
 While in the repository folder, the docker image for the compiler can be
 built using:
 ```
-docker build -t go-compiler .
+docker build -t gotham .
 ```
 
 Then the docker image can be run as a container, with the repository mounted
 on it.
 ```
-docker run --rm -it -v $GO_COMPILER_PATH:/go go-compiler bash
+docker run --rm -it -v $GOTHAM_PATH:/gotham gotham bash
 ```
 
-where $GO_COMPILER_PATH should be replaced with the full path to the
+where $GOTHAM_PATH should be replaced with the full path to the
 repository folder.
 
 Running the command gives an interactive terminal, in which the previous

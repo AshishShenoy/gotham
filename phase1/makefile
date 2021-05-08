@@ -1,5 +1,7 @@
-a.out: lex.yy.c y.tab.c
-	@gcc -lfl lex.yy.c y.tab.c
+BIN=gotham
+
+$(BIN): lex.yy.c y.tab.c
+	@gcc -lfl lex.yy.c y.tab.c -o $(BIN)
 
 lex.yy.c: prog.l y.tab.h
 	@lex prog.l
@@ -11,10 +13,10 @@ y.tab.c: prog.y
 	@yacc -Wno-yacc prog.y
 
 clean:
-	rm -f a.out lex.yy.c y.tab.c y.tab.h symbol_table.txt
+	rm -f $(BIN) lex.yy.c y.tab.c y.tab.h symbol_table.txt
 
-run: a.out test.go
-	@./a.out < test.go
+run: $(BIN) test.go
+	@./$(BIN) < test.go
 	@expand -t 8 symbol_table.txt > temp.txt
 	@cat temp.txt > symbol_table.txt
 	@rm temp.txt
@@ -24,4 +26,4 @@ dump: prog.l prog.y
 	@yacc -Wno-yacc -Wcounterexamples -d prog.y
 	@yacc -Wno-yacc -Wcounterexamples prog.y
 	@gcc -lfl lex.yy.c y.tab.c
-	@./a.out
+	@./$(BIN)
